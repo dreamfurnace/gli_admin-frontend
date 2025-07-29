@@ -1,0 +1,27 @@
+<template>
+  <div class="p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Token Transfers</h1>
+      <p class="text-gray-600 dark:text-gray-400">Monitor and manage blockchain token transfers</p>
+    </div>
+
+    <!-- Coming Soon Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-8">
+      <div class="text-center">
+        <div class="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+          </svg>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Coming Soon - Token Transfers</h2>
+        <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+          This feature will provide comprehensive monitoring and management of token transfers, including transaction history and transfer analytics.
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Token Transfer Management
+</script>

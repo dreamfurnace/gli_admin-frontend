@@ -1,0 +1,27 @@
+{
+    "include": ["src/**/*", "components.d.ts", "env.d.ts"],
+    "exclude": ["src/**/__tests__/*", "node_modules", "dist"],
+    "compilerOptions": {
+        "target": "esnext",
+        "useDefineForClassFields": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "strict": true,
+        "jsx": "preserve",
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "lib": ["esnext", "dom"],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+        "skipLibCheck": true,
+        "types": ["vite/client"]
+    },
+    "references": [
+        {
+            "path": "./tsconfig.node.json"
+        }
+    ]
+}

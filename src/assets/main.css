@@ -1,0 +1,42 @@
+@import './base.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 전역 테마색상 변수 (클래스 기반 테마 적용 권장) */
+:root {
+    --color-dreamfurnace-bg: #e0f7fa;
+    --color-dreamfurnace-bg-1: #dddddd;
+    --color-dreamfurnace-bg-2: #bbbbbb;
+    --color-dreamfurnace-bg-3: #999999;
+    --color-dreamfurnace-txt1: #006064;
+}
+
+.dark {
+    --color-dreamfurnace-bg: #006e2c;
+    --color-dreamfurnace-bg-1: #222222;
+    --color-dreamfurnace-bg-2: #444444;
+    --color-dreamfurnace-bg-3: #777777;
+    --color-dreamfurnace-txt1: #d9d9d9;
+}
+
+/* 전역 공통 스타일 최소화 */
+#app {
+    margin: 0 auto;
+    font-weight: normal;
+    color: black;
+    /* 기본 텍스트 컬러 지정 */
+}
+
+.dark #app {
+    color: white;
+    /* 다크모드 기본 텍스트 컬러 지정 */
+}
+
+/* 좁은표 셀의 padding 공용 지정 (Tailwind로 관리 어려운 경우에만) */
+.table-cell-tight {
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+    vertical-align: middle;
+}

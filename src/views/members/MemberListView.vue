@@ -1,0 +1,27 @@
+<template>
+  <div class="p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Member List</h1>
+      <p class="text-gray-600 dark:text-gray-400">View and manage all platform members and their information</p>
+    </div>
+
+    <!-- Coming Soon Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-8">
+      <div class="text-center">
+        <div class="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Coming Soon - Member List</h2>
+        <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+          This feature will display a comprehensive list of all platform members with search, filter, and management capabilities.
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Member List Management
+</script>
