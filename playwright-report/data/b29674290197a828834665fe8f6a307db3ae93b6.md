@@ -1,0 +1,109 @@
+# Page snapshot
+
+```yaml
+- button "☀️"
+- img "GLI Logo"
+- paragraph: GLI Platform
+- heading "관리자 대시보드" [level=2]
+- text: ◀︎ admin_gli
+- button "로그아웃"
+- paragraph: admin@gli.com
+- text: Super Admin
+- navigation:
+  - text: 🏠 대시보드 📄 비즈니스 콘텐츠 ▼
+  - link "- 회사 정보":
+    - /url: /business/info
+  - link "- 팀 관리":
+    - /url: /business/team
+  - link "- 전략 & 로드맵":
+    - /url: /business/strategy
+  - text: 🪙 토큰 관리 ▼
+  - link "- 토큰 사용처":
+    - /url: /tokens/usage
+  - link "- 배포 계획":
+    - /url: /tokens/distribution
+  - link "- GLIB/GLID 관리":
+    - /url: /tokens/management
+  - text: 👥 멤버 관리 ▼
+  - link "- 멤버 목록":
+    - /url: /members/list
+  - link "- 인증 상태":
+    - /url: /members/auth-status
+  - link "- 거래 모니터링":
+    - /url: /members/transactions
+  - text: 🔗 Web3 통합 ▼
+  - link "- 블록체인 운영":
+    - /url: /web3/operations
+  - link "- 스마트 계약":
+    - /url: /web3/contracts
+  - link "- 토큰 전송":
+    - /url: /web3/transfers
+  - text: 📊 분석 & 보고서 ▼
+  - link "- 플랫폼 통계":
+    - /url: /analytics/platform
+  - link "- 토큰 분석":
+    - /url: /analytics/tokens
+  - link "- 사용자 활동":
+    - /url: /analytics/activity
+  - text: ⚙️ 시스템 설정 ▼
+  - link "- API 설정":
+    - /url: /settings/api
+  - link "- 시스템 로그":
+    - /url: /settings/logs
+  - link "- 백업 & 복구":
+    - /url: /settings/backup
+- main:
+  - paragraph:
+    - strong: "[GLI Development]"
+    - text: "Auth: true | Admin: admin_gli | Role: Super Admin"
+  - heading "GLI 플랫폼 대시보드" [level=1]
+  - paragraph: GLI 관리자 패널에 오신 것을 환영합니다
+  - img
+  - paragraph: 전체 멤버
+  - paragraph: "0"
+  - img
+  - paragraph: GLIB 토큰
+  - paragraph: "0"
+  - img
+  - paragraph: 활성 거래
+  - paragraph: "0"
+  - img
+  - paragraph: 플랫폼 성장률
+  - paragraph: +0%
+  - heading "최근 활동" [level=3]
+  - text: U
+  - paragraph: 새 사용자 등록
+  - paragraph: user@example.com 이 GLI 플랫폼에 가입했습니다
+  - paragraph: 2분 전
+  - text: T
+  - paragraph: 토큰 배포 완료
+  - paragraph: 5,000 GLIB 토큰이 배포되었습니다
+  - paragraph: 1시간 전
+  - text: S
+  - paragraph: 시스템 유지보수
+  - paragraph: 예정된 유지보수가 완료되었습니다
+  - paragraph: 3시간 전
+  - heading "빠른 실행" [level=3]
+  - link "멤버 관리 사용자 보기 및 관리":
+    - /url: /members/list
+    - img
+    - paragraph: 멤버 관리
+    - paragraph: 사용자 보기 및 관리
+  - link "토큰 관리 GLIB/GLID 토큰 관리":
+    - /url: /tokens/usage
+    - img
+    - paragraph: 토큰 관리
+    - paragraph: GLIB/GLID 토큰 관리
+  - link "분석 플랫폼 통계 보기":
+    - /url: /analytics/platform
+    - img
+    - paragraph: 분석
+    - paragraph: 플랫폼 통계 보기
+  - link "설정 시스템 구성":
+    - /url: /settings/api
+    - img
+    - paragraph: 설정
+    - paragraph: 시스템 구성
+- img
+- img
+```

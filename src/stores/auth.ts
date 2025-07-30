@@ -149,11 +149,30 @@ export const useAuthStore = defineStore('auth', () => {
             const response = await api.post('/api/auth/login/', credentials);
             console.log('✅ GLI Admin Login Success:', response.data);
 
-            const { token: newToken, user: userData } = response.data;
+            const { token: newToken, user: rawUserData } = response.data;
+
+            // API 응답을 AdminUser 타입에 맞게 변환
+            const adaptedUserData = {
+                id: rawUserData.id, // UUID를 그대로 사용 (타입 정의를 나중에 수정)
+                username: rawUserData.username,
+                email: rawUserData.email,
+                first_name: rawUserData.first_name,
+                last_name: rawUserData.last_name,
+                is_staff: true, // 관리자이므로 true
+                is_active: rawUserData.is_active || true,
+                grade: {
+                    id: 1,
+                    name: rawUserData.membership_level === 'vip' ? 'Super Admin' : 'Admin',
+                    description: null
+                },
+                last_login_ip: null,
+                created_at: rawUserData.created_at,
+                updated_at: rawUserData.updated_at
+            };
 
             token.value = newToken.access;
             refreshToken.value = newToken.refresh;
-            user.value = userData;
+            user.value = adaptedUserData;
 
             localStorage.setItem('token', newToken.access);
             localStorage.setItem('refreshToken', newToken.refresh);
@@ -190,7 +209,9 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     const isSuperAdmin = computed(() => {
-        return user.value?.grade?.name === 'Super Admin' || user.value?.grade?.name === '슈퍼 관리자';
+        return user.value?.grade?.name === 'Super Admin' || 
+               user.value?.grade?.name === '슈퍼 관리자' ||
+               user.value?.membership_level === 'vip';
     });
 
     const getInitialRoute = () => {
