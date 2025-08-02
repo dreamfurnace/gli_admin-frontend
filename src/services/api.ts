@@ -5,6 +5,9 @@ import type {
   LoginCredentials, 
   AdminUser,
   BusinessContent,
+  ShoppingCategory,
+  ShoppingProduct,
+  ShoppingOrder,
   TokenDestination,
   TokenDistribution,
   TokenDistributionPlan,
@@ -303,7 +306,7 @@ class ApiService {
     
     return this.withRetry(
       async () => {
-        const response = await this.client.get('/api/admin/business-content/', { params });
+        const response = await this.client.get('/api/v1/business-content/', { params });
         return response.data;
       },
       'Get Business Content'
@@ -322,7 +325,7 @@ class ApiService {
       return mockContent;
     }
     
-    const response = await this.client.post('/api/admin/business-content/', data);
+    const response = await this.client.post('/api/v1/business-content/', data);
     return response.data;
   }
 
@@ -341,7 +344,7 @@ class ApiService {
       return mockContent;
     }
     
-    const response = await this.client.put(`/api/admin/business-content/${id}/`, data);
+    const response = await this.client.put(`/api/v1/business-content/${id}/`, data);
     return response.data;
   }
 
@@ -351,7 +354,236 @@ class ApiService {
       return;
     }
     
-    await this.client.delete(`/api/admin/business-content/${id}/`);
+    await this.client.delete(`/api/v1/business-content/${id}/`);
+  }
+
+  // Shopping Mall APIs
+  async getShoppingCategories(params?: any): Promise<ShoppingCategory[]> {
+    if (this.useMockApi) {
+      return [
+        {
+          id: '1',
+          name: 'Electronics',
+          description: 'Electronic devices and accessories',
+          icon: '💻',
+          order: 1,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        {
+          id: '2',
+          name: 'Resort Bookings',
+          description: 'Luxury resort reservations',
+          icon: '🏖️',
+          order: 2,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    }
+    
+    return this.withRetry(
+      async () => {
+        const response = await this.client.get('/api/v1/shopping/categories/', { params });
+        return response.data;
+      },
+      'Get Shopping Categories'
+    );
+  }
+
+  async createShoppingCategory(data: Omit<ShoppingCategory, 'id' | 'created_at' | 'updated_at'>): Promise<ShoppingCategory> {
+    if (this.useMockApi) {
+      const mockCategory: ShoppingCategory = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock create shopping category:', mockCategory);
+      return mockCategory;
+    }
+    
+    const response = await this.client.post('/api/v1/shopping/categories/', data);
+    return response.data;
+  }
+
+  async updateShoppingCategory(id: string, data: Partial<ShoppingCategory>): Promise<ShoppingCategory> {
+    if (this.useMockApi) {
+      const mockCategory: ShoppingCategory = {
+        id,
+        name: data.name || 'Updated Category',
+        description: data.description,
+        icon: data.icon,
+        order: data.order || 0,
+        is_active: data.is_active ?? true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock update shopping category:', mockCategory);
+      return mockCategory;
+    }
+    
+    const response = await this.client.put(`/api/v1/shopping/categories/${id}/`, data);
+    return response.data;
+  }
+
+  async deleteShoppingCategory(id: string): Promise<void> {
+    if (this.useMockApi) {
+      console.log('🧪 Mock delete shopping category:', id);
+      return;
+    }
+    
+    await this.client.delete(`/api/v1/shopping/categories/${id}/`);
+  }
+
+  async getShoppingProducts(params?: any): Promise<ShoppingProduct[]> {
+    if (this.useMockApi) {
+      return [
+        {
+          id: '1',
+          category: '1',
+          name: 'Premium Laptop',
+          description: 'High-performance laptop for professionals',
+          short_description: 'Professional laptop with latest specs',
+          product_type: 'goods',
+          price_glil: '1500.00000000',
+          price_usd: '1200.00',
+          stock_quantity: 25,
+          unlimited_stock: false,
+          main_image_url: 'https://example.com/laptop.jpg',
+          image_urls: [],
+          status: 'active',
+          is_featured: true,
+          tags: ['electronics', 'laptop', 'premium'],
+          attributes: { brand: 'TechBrand', model: 'Pro-2024' },
+          view_count: 150,
+          purchase_count: 12,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    }
+    
+    return this.withRetry(
+      async () => {
+        const response = await this.client.get('/api/v1/shopping/products/', { params });
+        return response.data;
+      },
+      'Get Shopping Products'
+    );
+  }
+
+  async createShoppingProduct(data: Omit<ShoppingProduct, 'id' | 'view_count' | 'purchase_count' | 'created_at' | 'updated_at'>): Promise<ShoppingProduct> {
+    if (this.useMockApi) {
+      const mockProduct: ShoppingProduct = {
+        ...data,
+        id: Date.now().toString(),
+        view_count: 0,
+        purchase_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock create shopping product:', mockProduct);
+      return mockProduct;
+    }
+    
+    const response = await this.client.post('/api/v1/shopping/products/', data);
+    return response.data;
+  }
+
+  async updateShoppingProduct(id: string, data: Partial<ShoppingProduct>): Promise<ShoppingProduct> {
+    if (this.useMockApi) {
+      const mockProduct: ShoppingProduct = {
+        id,
+        category: data.category || '1',
+        name: data.name || 'Updated Product',
+        description: data.description || 'Updated description',
+        short_description: data.short_description,
+        product_type: data.product_type || 'goods',
+        price_glil: data.price_glil || '0.00000000',
+        price_usd: data.price_usd,
+        stock_quantity: data.stock_quantity || 0,
+        unlimited_stock: data.unlimited_stock || false,
+        main_image_url: data.main_image_url,
+        image_urls: data.image_urls || [],
+        status: data.status || 'active',
+        is_featured: data.is_featured || false,
+        tags: data.tags || [],
+        attributes: data.attributes || {},
+        view_count: 0,
+        purchase_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock update shopping product:', mockProduct);
+      return mockProduct;
+    }
+    
+    const response = await this.client.put(`/api/v1/shopping/products/${id}/`, data);
+    return response.data;
+  }
+
+  async deleteShoppingProduct(id: string): Promise<void> {
+    if (this.useMockApi) {
+      console.log('🧪 Mock delete shopping product:', id);
+      return;
+    }
+    
+    await this.client.delete(`/api/v1/shopping/products/${id}/`);
+  }
+
+  async getShoppingOrders(params?: any): Promise<ShoppingOrder[]> {
+    if (this.useMockApi) {
+      return [
+        {
+          id: '1',
+          customer: 123,
+          order_number: 'ORD-2024-001',
+          status: 'pending',
+          total_amount_glil: '1500.00000000',
+          total_amount_usd: '1200.00',
+          items: [],
+          shipping_address: { city: 'Seoul', country: 'Korea' },
+          payment_info: { method: 'GLIL' },
+          notes: 'Rush delivery requested',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    }
+    
+    return this.withRetry(
+      async () => {
+        const response = await this.client.get('/api/v1/shopping/orders/', { params });
+        return response.data;
+      },
+      'Get Shopping Orders'
+    );
+  }
+
+  async updateShoppingOrderStatus(id: string, status: ShoppingOrder['status']): Promise<ShoppingOrder> {
+    if (this.useMockApi) {
+      const mockOrder: ShoppingOrder = {
+        id,
+        customer: 123,
+        order_number: 'ORD-2024-001',
+        status,
+        total_amount_glil: '1500.00000000',
+        total_amount_usd: '1200.00',
+        items: [],
+        shipping_address: { city: 'Seoul', country: 'Korea' },
+        payment_info: { method: 'GLIL' },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock update order status:', mockOrder);
+      return mockOrder;
+    }
+    
+    const response = await this.client.patch(`/api/v1/shopping/orders/${id}/`, { status });
+    return response.data;
   }
 
   // Token Usage Destination APIs

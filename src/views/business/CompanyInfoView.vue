@@ -37,17 +37,18 @@
           </div>
         </div>
 
-        <!-- Category Filter -->
+        <!-- Section Filter -->
         <div class="lg:w-48">
           <select
-            v-model="selectedCategory"
+            v-model="selectedSection"
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">All Categories</option>
-            <option value="company-info">Company Info</option>
-            <option value="team">Team</option>
-            <option value="strategy">Strategy</option>
-            <option value="general">General</option>
+            <option value="">All Sections</option>
+            <option value="background">회사 소개</option>
+            <option value="team">사업 소개</option>
+            <option value="strategy">사업 계획</option>
+            <option value="roadmap">생태계 토큰</option>
+            <option value="tokens">추진 사업</option>
           </select>
         </div>
 
@@ -60,6 +61,7 @@
             <option value="">All Status</option>
             <option value="published">Published</option>
             <option value="draft">Draft</option>
+            <option value="archived">Archived</option>
           </select>
         </div>
       </div>
@@ -83,7 +85,7 @@
                 Title
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Category
+                Section
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Status
@@ -108,20 +110,18 @@
               </td>
               <td class="px-6 py-4">
                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
-                  :class="getCategoryClass(content.category)">
-                  {{ getCategoryLabel(content.category) }}
+                  :class="getSectionClass(content.section)">
+                  {{ getSectionLabel(content.section) }}
                 </span>
               </td>
               <td class="px-6 py-4">
                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
-                  :class="content.isPublished 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'">
-                  {{ content.isPublished ? 'Published' : 'Draft' }}
+                  :class="getStatusClass(content.status)">
+                  {{ getStatusLabel(content.status) }}
                 </span>
               </td>
               <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                {{ formatDate(content.updatedAt) }}
+                {{ formatDate(content.updated_at) }}
               </td>
               <td class="px-6 py-4 text-center">
                 <div class="flex items-center justify-center space-x-2">

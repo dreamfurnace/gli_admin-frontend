@@ -17,13 +17,17 @@ export interface AdminUser {
 }
 
 export interface BusinessContent {
-  id: number;
+  id: string; // UUID in backend
+  section: 'background' | 'team' | 'strategy' | 'roadmap' | 'tokens';
   title: string;
+  subtitle?: string;
   content: string;
-  category: 'company-info' | 'team' | 'strategy' | 'general';
-  isPublished: boolean;
-  createdAt: string;
-  updatedAt: string;
+  image_url?: string;
+  order: number;
+  status: 'draft' | 'published' | 'archived';
+  meta_data?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TokenDestination {
@@ -183,4 +187,67 @@ export interface ApiError {
   message: string;
   code?: string;
   details?: any;
+}
+
+// Shopping Mall Types
+export interface ShoppingCategory {
+  id: string; // UUID
+  name: string;
+  description?: string;
+  icon?: string;
+  order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ShoppingProduct {
+  id: string; // UUID
+  category: string; // Category ID
+  name: string;
+  description: string;
+  short_description?: string;
+  product_type: 'goods' | 'resort' | 'restaurant' | 'service';
+  price_glil: string; // Decimal as string
+  price_usd?: string; // Decimal as string
+  stock_quantity: number;
+  unlimited_stock: boolean;
+  main_image_url?: string;
+  image_urls: string[];
+  status: 'active' | 'inactive' | 'sold_out' | 'discontinued';
+  is_featured: boolean;
+  tags: string[];
+  attributes: Record<string, any>;
+  view_count: number;
+  purchase_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ShoppingOrder {
+  id: string; // UUID
+  customer: number; // User ID
+  order_number: string;
+  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+  total_amount_glil: string; // Decimal as string
+  total_amount_usd?: string; // Decimal as string
+  items: ShoppingOrderItem[];
+  shipping_address: Record<string, any>;
+  payment_info: Record<string, any>;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ShoppingOrderItem {
+  id: string; // UUID
+  order: string; // Order ID
+  product: string; // Product ID
+  quantity: number;
+  unit_price_glil: string; // Decimal as string
+  unit_price_usd?: string; // Decimal as string
+  total_price_glil: string; // Decimal as string
+  total_price_usd?: string; // Decimal as string
+  created_at: string;
+  updated_at: string;
 }
