@@ -1,0 +1,22 @@
+
+> gli-admin-frontend@1.0.0 dev
+> vite --port 3001 -- --exec exec -a gli_admin-frontend node
+
+
+  VITE v5.4.19  ready in 968 ms
+
+  ➜  Local:   http://localhost:3001/
+  ➜  Network: http://192.168.0.4:3001/
+  ➜  Vue DevTools: Open http://localhost:3001/__devtools__/ as a separate window
+  ➜  Vue DevTools: Press Option(⌥)+Shift(⇧)+D in App to toggle the Vue DevTools
+
+> gli-admin-frontend@1.0.0 dev
+> vite --port 3001 -- --exec exec -a gli_admin-frontend node
+
+
+  VITE v5.4.19  ready in 669 ms
+
+  ➜  Local:   http://localhost:3001/
+  ➜  Network: http://192.168.0.4:3001/
+  ➜  Vue DevTools: Open http://localhost:3001/__devtools__/ as a separate window
+  ➜  Vue DevTools: Press Option(⌥)+Shift(⇧)+D in App to toggle the Vue DevTools
