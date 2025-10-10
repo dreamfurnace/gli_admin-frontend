@@ -35,3 +35,10 @@ storybook-static/
 # Playwright
 test-results/
 playwright-report/
+
+# Process files
+*.pid
+
+# Log files
+logs/
+*.log
