@@ -34,12 +34,11 @@ jobs:
         echo "BUILD_UID=$BUILD_UID" >> $GITHUB_ENV
         echo "🎯 Generated BUILD_UID: $BUILD_UID (KST)"
 
-        # .env.staging.local 파일 생성 (빌드 시 사용)
-        echo "VITE_APP_ENV=staging" > .env.staging.local
-        echo "VITE_API_BASE_URL=https://stg-api.glibiz.com" >> .env.staging.local
-        echo "VITE_BUILD_UID=$BUILD_UID" >> .env.staging.local
+        # .env.staging 파일이 이미 존재하므로, 빌드 UID만 추가
+        echo "VITE_BUILD_UID=$BUILD_UID" >> .env.staging
 
-        echo "📝 환경 변수 파일 생성 완료"
+        echo "📝 환경 변수 파일 업데이트 완료"
+        cat .env.staging
 
     - name: TypeScript 타입 체크
       run: npm run type-check
@@ -79,6 +78,69 @@ jobs:
 
         echo "✅ S3 업로드 완료"
 
+    - name: CloudFront SPA 라우팅 설정 확인
+      run: |
+        echo "🔍 CloudFront 에러 페이지 설정 확인 중..."
+
+        # CloudFront 배포 설정 가져오기
+        ETAG=$(aws cloudfront get-distribution-config \
+          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --query 'ETag' \
+          --output text)
+
+        echo "현재 ETag: $ETAG"
+
+        # 에러 페이지 설정이 없으면 추가 (403, 404 → index.html)
+        aws cloudfront get-distribution-config \
+          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --output json > /tmp/cf-config.json
+
+        # CustomErrorResponses 확인 및 업데이트
+        python3 << 'PYTHON_SCRIPT'
+        import json
+
+        with open('/tmp/cf-config.json', 'r') as f:
+            config = json.load(f)
+
+        dist_config = config['DistributionConfig']
+
+        # SPA 라우팅을 위한 에러 응답 설정
+        error_responses = [
+            {
+                "ErrorCode": 403,
+                "ResponsePagePath": "/index.html",
+                "ResponseCode": "200",
+                "ErrorCachingMinTTL": 10
+            },
+            {
+                "ErrorCode": 404,
+                "ResponsePagePath": "/index.html",
+                "ResponseCode": "200",
+                "ErrorCachingMinTTL": 10
+            }
+        ]
+
+        # CustomErrorResponses 업데이트
+        dist_config['CustomErrorResponses'] = {
+            'Quantity': len(error_responses),
+            'Items': error_responses
+        }
+
+        # 업데이트된 설정 저장
+        with open('/tmp/cf-config-updated.json', 'w') as f:
+            json.dump(dist_config, f)
+
+        print("✅ CloudFront SPA 라우팅 설정 준비 완료")
+        PYTHON_SCRIPT
+
+        # CloudFront 배포 업데이트
+        aws cloudfront update-distribution \
+          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --distribution-config file:///tmp/cf-config-updated.json \
+          --if-match "$ETAG" || echo "⚠️  CloudFront 설정은 이미 최신 상태이거나 업데이트가 불필요합니다"
+
+        echo "✅ CloudFront SPA 라우팅 설정 완료"
+
     - name: CloudFront 캐시 무효화
       run: |
         echo "🔄 CloudFront 캐시 무효화 중..."
@@ -103,3 +165,66 @@ jobs:
         else
           echo "❌ GLI Admin Frontend Staging 배포 실패!"
         fi
+
+    - name: CloudFront SPA 라우팅 설정 확인
+      run: |
+        echo "🔍 CloudFront 에러 페이지 설정 확인 중..."
+
+        # CloudFront 배포 설정 가져오기
+        ETAG=$(aws cloudfront get-distribution-config \
+          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --query 'ETag' \
+          --output text)
+
+        echo "현재 ETag: $ETAG"
+
+        # 에러 페이지 설정이 없으면 추가 (403, 404 → index.html)
+        aws cloudfront get-distribution-config \
+          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --output json > /tmp/cf-config.json
+
+        # CustomErrorResponses 확인 및 업데이트
+        python3 << 'PYTHON_SCRIPT'
+        import json
+
+        with open('/tmp/cf-config.json', 'r') as f:
+            config = json.load(f)
+
+        dist_config = config['DistributionConfig']
+
+        # SPA 라우팅을 위한 에러 응답 설정
+        error_responses = [
+            {
+                "ErrorCode": 403,
+                "ResponsePagePath": "/index.html",
+                "ResponseCode": "200",
+                "ErrorCachingMinTTL": 10
+            },
+            {
+                "ErrorCode": 404,
+                "ResponsePagePath": "/index.html",
+                "ResponseCode": "200",
+                "ErrorCachingMinTTL": 10
+            }
+        ]
+
+        # CustomErrorResponses 업데이트
+        dist_config['CustomErrorResponses'] = {
+            'Quantity': len(error_responses),
+            'Items': error_responses
+        }
+
+        # 업데이트된 설정 저장
+        with open('/tmp/cf-config-updated.json', 'w') as f:
+            json.dump(dist_config, f)
+
+        print("✅ CloudFront SPA 라우팅 설정 준비 완료")
+        PYTHON_SCRIPT
+
+        # CloudFront 배포 업데이트
+        aws cloudfront update-distribution \
+          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --distribution-config file:///tmp/cf-config-updated.json \
+          --if-match "$ETAG" || echo "⚠️  CloudFront 설정은 이미 최신 상태이거나 업데이트가 불필요합니다"
+
+        echo "✅ CloudFront SPA 라우팅 설정 완료"
