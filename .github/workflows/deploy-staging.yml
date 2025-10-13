@@ -145,7 +145,7 @@ jobs:
       run: |
         echo "🔄 CloudFront 캐시 무효화 중..."
         INVALIDATION_ID=$(aws cloudfront create-invalidation \
-          --distribution-id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --distribution-id ${{ secrets.STG_CLOUDFRONT_DISTRIBUTION_ID }} \
           --paths "/*" \
           --query 'Invalidation.Id' \
           --output text)
