@@ -15,7 +15,7 @@ export const useAdminManagementStore = defineStore('adminManagement', () => {
         loading.value = true;
         error.value = null;
         try {
-            const response = await api.get('/auth/admins/');
+            const response = await api.get('/api/auth/admins/');
             adminUsers.value = response.data;
         } catch (err) {
             if (isAxiosError(err)) {
@@ -37,7 +37,7 @@ export const useAdminManagementStore = defineStore('adminManagement', () => {
         loading.value = true;
         error.value = null;
         try {
-            const response = await api.get(`/auth/admins/${adminId}/`);
+            const response = await api.get(`/api/auth/admins/${adminId}/`);
             selectedAdmin.value = response.data;
         } catch (err) {
             if (isAxiosError(err)) {
@@ -63,7 +63,7 @@ export const useAdminManagementStore = defineStore('adminManagement', () => {
             console.log('📦 axios baseURL:', import.meta.env.VITE_API_BASE);
             console.log('✅ import.meta.env:', import.meta.env);
 
-            const response = await api.put(`/auth/admins/${adminId}/`, data);
+            const response = await api.put(`/api/auth/admins/${adminId}/`, data);
             // 성공 시 목록 새로고침
             await fetchAdminUsers();
             return response.data;

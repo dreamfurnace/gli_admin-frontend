@@ -1,8 +1,8 @@
 // GLI Admin API Service Layer
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { errorHandler } from '@/utils/errorHandler';
-import type { 
-  LoginCredentials, 
+import type {
+  LoginCredentials,
   AdminUser,
   BusinessContent,
   ShoppingCategory,
@@ -15,7 +15,13 @@ import type {
   TokenDistributionTemplate,
   MemberTransaction,
   MemberAuthStatus,
-  PlatformStatistics 
+  PlatformStatistics,
+  TeamMember,
+  ProjectFeature,
+  StrategyPhase,
+  DevelopmentTimeline,
+  TokenEcosystem,
+  Member
 } from '@/types/api';
 
 class ApiService {
@@ -887,9 +893,655 @@ class ApiService {
         pendingVerifications: 234,
       };
     }
-    
+
     const response = await this.client.get('/api/admin/platform-statistics/');
     return response.data;
+  }
+
+  // Team Member APIs
+  async getTeamMembers(showAll: boolean = false): Promise<TeamMember[]> {
+    if (this.useMockApi) {
+      return [
+        {
+          id: '1',
+          image_url: 'https://example.com/ceo.jpg',
+          position_ko: 'GLI CEO',
+          position_en: 'Chief Executive Officer',
+          role_ko: '블록체인 비즈니스 전략 및 전반적인 경영을 담당합니다.',
+          role_en: 'Responsible for blockchain business strategy and overall management.',
+          tags: ['Blockchain', 'Business Strategy', 'Leadership'],
+          order: 1,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    }
+
+    return this.withRetry(
+      async () => {
+        const params = showAll ? { show_all: 'true' } : {};
+        const response = await this.client.get('/api/team-members/', { params });
+        return response.data;
+      },
+      'Get Team Members'
+    );
+  }
+
+  async createTeamMember(data: Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>): Promise<TeamMember> {
+    if (this.useMockApi) {
+      const mockMember: TeamMember = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock create team member:', mockMember);
+      return mockMember;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.post('/api/team-members/', data);
+        return response.data;
+      },
+      'Create Team Member'
+    );
+  }
+
+  async updateTeamMember(id: string, data: Partial<TeamMember>): Promise<TeamMember> {
+    if (this.useMockApi) {
+      const mockMember: TeamMember = {
+        id,
+        image_url: data.image_url || 'https://example.com/default.jpg',
+        position_ko: data.position_ko || 'Updated Position',
+        position_en: data.position_en || 'Updated Position',
+        role_ko: data.role_ko || 'Updated Role',
+        role_en: data.role_en || 'Updated Role',
+        tags: data.tags || [],
+        order: data.order || 0,
+        is_active: data.is_active ?? true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock update team member:', mockMember);
+      return mockMember;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.put(`/api/team-members/${id}/`, data);
+        return response.data;
+      },
+      'Update Team Member'
+    );
+  }
+
+  async deleteTeamMember(id: string): Promise<void> {
+    if (this.useMockApi) {
+      console.log('🧪 Mock delete team member:', id);
+      return;
+    }
+
+    return this.withRetry(
+      async () => {
+        await this.client.delete(`/api/team-members/${id}/`);
+      },
+      'Delete Team Member'
+    );
+  }
+
+  // Project Feature APIs
+  async getProjectFeatures(showAll: boolean = false): Promise<ProjectFeature[]> {
+    if (this.useMockApi) {
+      return [
+        {
+          id: '1',
+          icon: '🌊',
+          title_ko: '비전',
+          title_en: 'Vision',
+          description_ko: 'GLI는 리조트 경험과 블록체인 기술을 융합하여 새로운 가치를 창출합니다.',
+          description_en: 'GLI creates new value by merging resort experiences with blockchain technology.',
+          order: 1,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    }
+
+    return this.withRetry(
+      async () => {
+        const params = showAll ? { show_all: 'true' } : {};
+        const response = await this.client.get('/api/project-features/', { params });
+        return response.data;
+      },
+      'Get Project Features'
+    );
+  }
+
+  async createProjectFeature(data: Omit<ProjectFeature, 'id' | 'created_at' | 'updated_at'>): Promise<ProjectFeature> {
+    if (this.useMockApi) {
+      const mockFeature: ProjectFeature = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock create project feature:', mockFeature);
+      return mockFeature;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.post('/api/project-features/', data);
+        return response.data;
+      },
+      'Create Project Feature'
+    );
+  }
+
+  async updateProjectFeature(id: string, data: Partial<ProjectFeature>): Promise<ProjectFeature> {
+    if (this.useMockApi) {
+      const mockFeature: ProjectFeature = {
+        id,
+        icon: data.icon || '🌊',
+        title_ko: data.title_ko || 'Updated Title',
+        title_en: data.title_en || 'Updated Title',
+        description_ko: data.description_ko || 'Updated Description',
+        description_en: data.description_en || 'Updated Description',
+        order: data.order || 0,
+        is_active: data.is_active ?? true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock update project feature:', mockFeature);
+      return mockFeature;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.put(`/api/project-features/${id}/`, data);
+        return response.data;
+      },
+      'Update Project Feature'
+    );
+  }
+
+  async deleteProjectFeature(id: string): Promise<void> {
+    if (this.useMockApi) {
+      console.log('🧪 Mock delete project feature:', id);
+      return;
+    }
+
+    return this.withRetry(
+      async () => {
+        await this.client.delete(`/api/project-features/${id}/`);
+      },
+      'Delete Project Feature'
+    );
+  }
+
+  // Strategy Phase APIs
+  async getStrategyPhases(showAll: boolean = false): Promise<StrategyPhase[]> {
+    if (this.useMockApi) {
+      return [
+        {
+          id: '1',
+          icon: '🚀',
+          title_ko: '플랫폼 구축',
+          title_en: 'Platform Development',
+          description_ko: 'GLI 플랫폼의 기반을 구축하고 핵심 토큰을 발행합니다.',
+          description_en: 'Build the foundation of the GLI platform and issue core tokens.',
+          features: ['웹 플랫폼 개발', 'GLIB/GLID/GLIL 토큰 발행', '지갑 연동 시스템'],
+          order: 1,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    }
+
+    return this.withRetry(
+      async () => {
+        const params = showAll ? { show_all: 'true' } : {};
+        const response = await this.client.get('/api/strategy-phases/', { params });
+        return response.data;
+      },
+      'Get Strategy Phases'
+    );
+  }
+
+  async createStrategyPhase(data: Omit<StrategyPhase, 'id' | 'created_at' | 'updated_at'>): Promise<StrategyPhase> {
+    if (this.useMockApi) {
+      const mockPhase: StrategyPhase = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock create strategy phase:', mockPhase);
+      return mockPhase;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.post('/api/strategy-phases/', data);
+        return response.data;
+      },
+      'Create Strategy Phase'
+    );
+  }
+
+  async updateStrategyPhase(id: string, data: Partial<StrategyPhase>): Promise<StrategyPhase> {
+    if (this.useMockApi) {
+      const mockPhase: StrategyPhase = {
+        id,
+        icon: data.icon || '🚀',
+        title_ko: data.title_ko || 'Updated Title',
+        title_en: data.title_en || 'Updated Title',
+        description_ko: data.description_ko || 'Updated Description',
+        description_en: data.description_en || 'Updated Description',
+        features: data.features || [],
+        order: data.order || 0,
+        is_active: data.is_active ?? true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock update strategy phase:', mockPhase);
+      return mockPhase;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.put(`/api/strategy-phases/${id}/`, data);
+        return response.data;
+      },
+      'Update Strategy Phase'
+    );
+  }
+
+  async deleteStrategyPhase(id: string): Promise<void> {
+    if (this.useMockApi) {
+      console.log('🧪 Mock delete strategy phase:', id);
+      return;
+    }
+
+    return this.withRetry(
+      async () => {
+        await this.client.delete(`/api/strategy-phases/${id}/`);
+      },
+      'Delete Strategy Phase'
+    );
+  }
+
+  // Image Upload APIs
+  async uploadImage(file: File): Promise<{ url: string; key?: string; filename?: string; size?: number; content_type?: string }> {
+    if (this.useMockApi) {
+      const mockUrl = `https://mock-s3.amazonaws.com/gli-platform-media-dev/${Date.now()}-${file.name}`;
+      console.log('🧪 Mock upload image:', mockUrl);
+      return { url: mockUrl };
+    }
+
+    return this.withRetry(
+      async () => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await this.client.post('/api/upload/image/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        // Backend response format: { success: true, data: { url, key, filename, size, content_type } }
+        console.log('✅ Image uploaded successfully:', response.data.data);
+        return response.data.data;
+      },
+      'Upload Image'
+    );
+  }
+
+  async deleteImage(imageUrl: string): Promise<void> {
+    if (this.useMockApi) {
+      console.log('🧪 Mock delete image:', imageUrl);
+      return;
+    }
+
+    return this.withRetry(
+      async () => {
+        await this.client.delete('/api/upload/image/delete/', {
+          data: { image_url: imageUrl },
+        });
+      },
+      'Delete Image'
+    );
+  }
+
+  // Development Timeline APIs
+  async getDevelopmentTimelines(showAll: boolean = false): Promise<DevelopmentTimeline[]> {
+    if (this.useMockApi) {
+      return [
+        {
+          id: '1',
+          quarter: '2024 Q1',
+          status_icon: '✅',
+          title_ko: '플랫폼 MVP 출시',
+          title_en: 'Platform MVP Launch',
+          description_ko: '기본 플랫폼과 토큰 시스템 출시',
+          description_en: 'Launch basic platform and token system',
+          order: 1,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    }
+
+    return this.withRetry(
+      async () => {
+        const params = showAll ? { show_all: 'true' } : {};
+        const response = await this.client.get('/api/development-timelines/', { params });
+        return response.data;
+      },
+      'Get Development Timelines'
+    );
+  }
+
+  async createDevelopmentTimeline(data: Omit<DevelopmentTimeline, 'id' | 'created_at' | 'updated_at'>): Promise<DevelopmentTimeline> {
+    if (this.useMockApi) {
+      const mockTimeline: DevelopmentTimeline = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock create development timeline:', mockTimeline);
+      return mockTimeline;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.post('/api/development-timelines/', data);
+        return response.data;
+      },
+      'Create Development Timeline'
+    );
+  }
+
+  async updateDevelopmentTimeline(id: string, data: Partial<DevelopmentTimeline>): Promise<DevelopmentTimeline> {
+    if (this.useMockApi) {
+      const mockTimeline: DevelopmentTimeline = {
+        id,
+        quarter: data.quarter || '2024 Q1',
+        status_icon: data.status_icon || '✅',
+        title_ko: data.title_ko || 'Updated Title',
+        title_en: data.title_en || 'Updated Title',
+        description_ko: data.description_ko || 'Updated Description',
+        description_en: data.description_en || 'Updated Description',
+        order: data.order || 0,
+        is_active: data.is_active ?? true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock update development timeline:', mockTimeline);
+      return mockTimeline;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.put(`/api/development-timelines/${id}/`, data);
+        return response.data;
+      },
+      'Update Development Timeline'
+    );
+  }
+
+  async deleteDevelopmentTimeline(id: string): Promise<void> {
+    if (this.useMockApi) {
+      console.log('🧪 Mock delete development timeline:', id);
+      return;
+    }
+
+    return this.withRetry(
+      async () => {
+        await this.client.delete(`/api/development-timelines/${id}/`);
+      },
+      'Delete Development Timeline'
+    );
+  }
+
+  // Token Ecosystem APIs
+  async getTokenEcosystems(showAll: boolean = false): Promise<TokenEcosystem[]> {
+    if (this.useMockApi) {
+      return [
+        {
+          id: '1',
+          icon: '🔵',
+          name: 'GLI Business',
+          symbol: 'GLIB',
+          description_ko: 'GLI 플랫폼의 핵심 비즈니스 토큰',
+          description_en: 'Core business token of GLI platform',
+          features: ['리조트 예약', '스테이킹 보상', 'NFT 거래'],
+          total_supply: '100,000,000 GLIB',
+          current_price: '$0.25',
+          order: 1,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ];
+    }
+
+    return this.withRetry(
+      async () => {
+        const params = showAll ? { show_all: 'true' } : {};
+        const response = await this.client.get('/api/token-ecosystems/', { params });
+        return response.data;
+      },
+      'Get Token Ecosystems'
+    );
+  }
+
+  async createTokenEcosystem(data: Omit<TokenEcosystem, 'id' | 'created_at' | 'updated_at'>): Promise<TokenEcosystem> {
+    if (this.useMockApi) {
+      const mockToken: TokenEcosystem = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock create token ecosystem:', mockToken);
+      return mockToken;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.post('/api/token-ecosystems/', data);
+        return response.data;
+      },
+      'Create Token Ecosystem'
+    );
+  }
+
+  async updateTokenEcosystem(id: string, data: Partial<TokenEcosystem>): Promise<TokenEcosystem> {
+    if (this.useMockApi) {
+      const mockToken: TokenEcosystem = {
+        id,
+        icon: data.icon || '🔵',
+        name: data.name || 'Updated Token',
+        symbol: data.symbol || 'TOK',
+        description_ko: data.description_ko || 'Updated Description',
+        description_en: data.description_en || 'Updated Description',
+        features: data.features || [],
+        total_supply: data.total_supply || '0',
+        current_price: data.current_price || '$0',
+        order: data.order || 0,
+        is_active: data.is_active ?? true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock update token ecosystem:', mockToken);
+      return mockToken;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.put(`/api/token-ecosystems/${id}/`, data);
+        return response.data;
+      },
+      'Update Token Ecosystem'
+    );
+  }
+
+  async deleteTokenEcosystem(id: string): Promise<void> {
+    if (this.useMockApi) {
+      console.log('🧪 Mock delete token ecosystem:', id);
+      return;
+    }
+
+    return this.withRetry(
+      async () => {
+        await this.client.delete(`/api/token-ecosystems/${id}/`);
+      },
+      'Delete Token Ecosystem'
+    );
+  }
+
+  // Member APIs (회원 관리)
+  async getMembers(params?: {
+    search?: string;
+    membership_level?: 'basic' | 'premium' | 'vip';
+    is_active?: boolean;
+  }): Promise<Member[]> {
+    if (this.useMockApi) {
+      return [
+        {
+          id: '1',
+          username: 'user1',
+          email: 'user1@example.com',
+          wallet_address: '0x123...abc',
+          membership_level: 'premium',
+          sol_balance: '1000.000000000',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          last_login: new Date().toISOString(),
+          first_name: 'John',
+          last_name: 'Doe',
+        },
+        {
+          id: '2',
+          username: 'user2',
+          email: 'user2@example.com',
+          membership_level: 'vip',
+          sol_balance: '5000.000000000',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          last_login: new Date().toISOString(),
+          first_name: 'Jane',
+          last_name: 'Smith',
+        },
+      ];
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.get('/api/members/', { params });
+        return response.data;
+      },
+      'Get Members'
+    );
+  }
+
+  async getMember(id: string): Promise<Member> {
+    if (this.useMockApi) {
+      return {
+        id,
+        username: 'user1',
+        email: 'user1@example.com',
+        wallet_address: '0x123...abc',
+        membership_level: 'premium',
+        sol_balance: '1000.000000000',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+        first_name: 'John',
+        last_name: 'Doe',
+      };
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.get(`/api/members/${id}/`);
+        return response.data;
+      },
+      'Get Member'
+    );
+  }
+
+  async createMember(data: Omit<Member, 'id' | 'created_at' | 'updated_at' | 'last_login'>): Promise<Member> {
+    if (this.useMockApi) {
+      const mockMember: Member = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log('🧪 Mock create member:', mockMember);
+      return mockMember;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.post('/api/members/', data);
+        return response.data;
+      },
+      'Create Member'
+    );
+  }
+
+  async updateMember(id: string, data: Partial<Member>): Promise<Member> {
+    if (this.useMockApi) {
+      const mockMember: Member = {
+        id,
+        username: data.username || 'updated_user',
+        email: data.email || 'updated@example.com',
+        wallet_address: data.wallet_address,
+        membership_level: data.membership_level || 'basic',
+        sol_balance: data.sol_balance || '0.000000000',
+        is_active: data.is_active ?? true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        first_name: data.first_name,
+        last_name: data.last_name,
+      };
+      console.log('🧪 Mock update member:', mockMember);
+      return mockMember;
+    }
+
+    return this.withRetry(
+      async () => {
+        const response = await this.client.put(`/api/members/${id}/`, data);
+        return response.data;
+      },
+      'Update Member'
+    );
+  }
+
+  async deleteMember(id: string): Promise<void> {
+    if (this.useMockApi) {
+      console.log('🧪 Mock delete member:', id);
+      return;
+    }
+
+    return this.withRetry(
+      async () => {
+        await this.client.delete(`/api/members/${id}/`);
+      },
+      'Delete Member'
+    );
   }
 
   // Health check

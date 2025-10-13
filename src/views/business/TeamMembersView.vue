@@ -4,8 +4,8 @@
     <div class="mb-6">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">🗺️ 전략 로드맵 관리</h1>
-          <p class="text-gray-600 dark:text-gray-400">GLI 플랫폼 전략 로드맵 페이즈를 관리합니다</p>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">👥 팀 구성원 관리</h1>
+          <p class="text-gray-600 dark:text-gray-400">GLI 플랫폼 팀 구성원 정보를 관리합니다</p>
         </div>
         <button
           @click="openCreateModal"
@@ -14,7 +14,7 @@
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
           </svg>
-          페이즈 추가
+          팀 구성원 추가
         </button>
       </div>
     </div>
@@ -31,7 +31,7 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="제목으로 검색..."
+              placeholder="이름 또는 직책으로 검색..."
               class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -43,7 +43,7 @@
             v-model="showAll"
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           >
-            <option :value="false">활성 페이즈만</option>
+            <option :value="false">활성 팀원만</option>
             <option :value="true">전체 보기</option>
           </select>
         </div>
@@ -58,8 +58,8 @@
       </div>
     </div>
 
-    <!-- Phases List -->
-    <div v-else-if="filteredPhases.length > 0" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <!-- Team Members List -->
+    <div v-else-if="filteredMembers.length > 0" class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead class="bg-gray-50 dark:bg-gray-700">
@@ -68,16 +68,16 @@
                 순서
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                아이콘
+                사진
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                제목
+                직책
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                설명
+                역할
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                주요 기능
+                태그
               </th>
               <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 상태
@@ -88,48 +88,71 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
-            <tr v-for="phase in filteredPhases" :key="phase.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <tr v-for="member in filteredMembers" :key="member.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
               <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                {{ phase.order }}
+                {{ member.order }}
               </td>
-              <td class="px-6 py-4 text-2xl">
-                {{ phase.icon }}
+              <td class="px-6 py-4">
+                <img
+                  v-if="member.image_url"
+                  :src="member.image_url"
+                  :alt="member.position_ko"
+                  class="w-12 h-12 rounded-full object-cover"
+                  @error="handleImageError"
+                />
+                <div v-else class="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                  <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  </svg>
+                </div>
               </td>
               <td class="px-6 py-4">
                 <div class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ phase.title_ko }}
+                  {{ member.position_ko }}
                 </div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                  {{ phase.title_en }}
+                  {{ member.position_en }}
                 </div>
               </td>
               <td class="px-6 py-4">
                 <div class="text-sm text-gray-900 dark:text-white max-w-xs truncate">
-                  {{ phase.description_ko }}
+                  {{ member.role_ko }}
                 </div>
                 <div class="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                  {{ phase.description_en }}
+                  {{ member.role_en }}
                 </div>
               </td>
               <td class="px-6 py-4">
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                  {{ phase.features.length }}개 기능
+                <div class="flex flex-wrap gap-1">
+                  <span
+                    v-for="(tag, idx) in member.tags.slice(0, 3)"
+                    :key="idx"
+                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  >
+                    {{ tag }}
+                  </span>
+                  <span
+                    v-if="member.tags.length > 3"
+                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                  >
+                    +{{ member.tags.length - 3 }}
+                  </span>
                 </div>
               </td>
               <td class="px-6 py-4 text-center">
                 <span
-                  :class="phase.is_active
+                  :class="member.is_active
                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                     : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'"
                   class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
                 >
-                  {{ phase.is_active ? '활성' : '비활성' }}
+                  {{ member.is_active ? '활성' : '비활성' }}
                 </span>
               </td>
               <td class="px-6 py-4 text-center">
                 <div class="flex items-center justify-center space-x-2">
                   <button
-                    @click="editPhase(phase)"
+                    @click="editMember(member)"
                     class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                     title="수정"
                   >
@@ -138,13 +161,13 @@
                     </svg>
                   </button>
                   <button
-                    @click="toggleActive(phase)"
-                    :class="phase.is_active
+                    @click="toggleActive(member)"
+                    :class="member.is_active
                       ? 'text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300'
                       : 'text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300'"
-                    :title="phase.is_active ? '비활성화' : '활성화'"
+                    :title="member.is_active ? '비활성화' : '활성화'"
                   >
-                    <svg v-if="phase.is_active" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-if="member.is_active" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
                     </svg>
                     <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +176,7 @@
                     </svg>
                   </button>
                   <button
-                    @click="deletePhase(phase)"
+                    @click="deleteMember(member)"
                     class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                     title="삭제"
                   >
@@ -174,12 +197,12 @@
       <div class="text-center">
         <div class="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mb-4">
           <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
           </svg>
         </div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">전략 로드맵 페이즈가 없습니다</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">팀 구성원이 없습니다</h3>
         <p class="text-gray-500 dark:text-gray-400 mb-4">
-          {{ searchQuery ? '검색 결과가 없습니다' : '첫 번째 전략 로드맵 페이즈를 추가하세요' }}
+          {{ searchQuery ? '검색 결과가 없습니다' : '첫 번째 팀 구성원을 추가하세요' }}
         </p>
         <button
           @click="openCreateModal"
@@ -188,7 +211,7 @@
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
           </svg>
-          페이즈 추가
+          팀 구성원 추가
         </button>
       </div>
     </div>
@@ -198,88 +221,139 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
           <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-            {{ isEditing ? '전략 로드맵 페이즈 수정' : '전략 로드맵 페이즈 추가' }}
+            {{ isEditing ? '팀 구성원 수정' : '팀 구성원 추가' }}
           </h3>
         </div>
 
-        <form @submit.prevent="savePhase" class="p-6 space-y-4">
-          <!-- Icon -->
+        <form @submit.prevent="saveMember" class="p-6 space-y-4">
+          <!-- Image Upload -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">아이콘 (Emoji) *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">사진</label>
+            <div class="flex items-center space-x-4">
+              <div class="flex-shrink-0">
+                <img
+                  v-if="formData.image_url && !imageLoadError"
+                  :src="formData.image_url"
+                  alt="미리보기"
+                  class="w-24 h-24 rounded-full object-cover"
+                  @error="handleImageError"
+                />
+                <div v-else class="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                  <svg class="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1">
+                <input
+                  type="file"
+                  ref="imageInput"
+                  accept="image/*"
+                  @change="handleImageSelect"
+                  class="hidden"
+                />
+                <button
+                  type="button"
+                  @click="$refs.imageInput.click()"
+                  :disabled="uploading"
+                  class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                >
+                  {{ uploading ? '업로드 중...' : '이미지 선택' }}
+                </button>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                  JPG, PNG 또는 GIF (최대 5MB)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Position (Korean) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">직책 (한글) *</label>
             <input
-              v-model="formData.icon"
+              v-model="formData.position_ko"
               type="text"
               required
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-              placeholder="예: 🚀"
-              maxlength="10"
+              placeholder="예: GLI CEO"
             />
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Emoji를 입력하세요
-            </p>
           </div>
 
-          <!-- Title (Korean) -->
+          <!-- Position (English) -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">제목 (한글) *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">직책 (영문) *</label>
             <input
-              v-model="formData.title_ko"
+              v-model="formData.position_en"
               type="text"
               required
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-              placeholder="예: 플랫폼 구축"
+              placeholder="예: Chief Executive Officer"
             />
           </div>
 
-          <!-- Title (English) -->
+          <!-- Role (Korean) -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">제목 (영문) *</label>
-            <input
-              v-model="formData.title_en"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-              placeholder="예: Platform Development"
-            />
-          </div>
-
-          <!-- Description (Korean) -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">설명 (한글) *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">역할 (한글) *</label>
             <textarea
-              v-model="formData.description_ko"
+              v-model="formData.role_ko"
               required
               rows="3"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-              placeholder="예: GLI 플랫폼의 기반을 구축하고 핵심 토큰을 발행합니다."
+              placeholder="예: 블록체인 비즈니스 전략 및 전반적인 경영을 담당합니다."
             ></textarea>
           </div>
 
-          <!-- Description (English) -->
+          <!-- Role (English) -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">설명 (영문) *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">역할 (영문) *</label>
             <textarea
-              v-model="formData.description_en"
+              v-model="formData.role_en"
               required
               rows="3"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-              placeholder="예: Build the foundation of the GLI platform and issue core tokens."
+              placeholder="예: Responsible for blockchain business strategy and overall management."
             ></textarea>
           </div>
 
-          <!-- Features -->
+          <!-- Tags -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">주요 기능 *</label>
-            <textarea
-              v-model="featuresText"
-              required
-              rows="4"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-              placeholder="각 줄에 하나씩 입력하세요&#10;예:&#10;웹 플랫폼 개발&#10;GLIB/GLID/GLIL 토큰 발행&#10;지갑 연동 시스템"
-            ></textarea>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              각 줄에 하나씩 입력하세요. 빈 줄은 무시됩니다.
-            </p>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">태그</label>
+            <div class="space-y-2">
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span
+                  v-for="(tag, idx) in formData.tags"
+                  :key="idx"
+                  class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                >
+                  {{ tag }}
+                  <button
+                    type="button"
+                    @click="removeTag(idx)"
+                    class="ml-2 focus:outline-none"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </span>
+              </div>
+              <div class="flex gap-2">
+                <input
+                  v-model="newTag"
+                  type="text"
+                  @keypress.enter.prevent="addTag"
+                  class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  placeholder="태그 입력 후 Enter"
+                />
+                <button
+                  type="button"
+                  @click="addTag"
+                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                >
+                  추가
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Order -->
@@ -344,12 +418,12 @@
               </svg>
             </div>
             <div>
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white">전략 로드맵 페이즈 삭제</h3>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white">팀 구성원 삭제</h3>
               <p class="text-sm text-gray-500 dark:text-gray-400">이 작업은 되돌릴 수 없습니다.</p>
             </div>
           </div>
           <p class="text-gray-700 dark:text-gray-300 mb-6">
-            정말로 "{{ phaseToDelete?.title_ko }}"을(를) 삭제하시겠습니까?
+            정말로 "{{ memberToDelete?.position_ko }}"을(를) 삭제하시겠습니까?
           </p>
           <div class="flex justify-end space-x-3">
             <button
@@ -374,15 +448,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { apiService } from '@/services/api';
-import type { StrategyPhase } from '@/types/api';
+import type { TeamMember } from '@/types/api';
 
 // Reactive state
-const phases = ref<StrategyPhase[]>([]);
+const members = ref<TeamMember[]>([]);
 const loading = ref(false);
 const saving = ref(false);
 const deleting = ref(false);
+const uploading = ref(false);
+const imageLoadError = ref(false);
 
 // Filter states
 const searchQuery = ref('');
@@ -392,35 +468,36 @@ const showAll = ref(false);
 const showModal = ref(false);
 const showDeleteModal = ref(false);
 const isEditing = ref(false);
-const phaseToDelete = ref<StrategyPhase | null>(null);
+const memberToDelete = ref<TeamMember | null>(null);
 
 // Form data
 const formData = ref({
-  icon: '',
-  title_ko: '',
-  title_en: '',
-  description_ko: '',
-  description_en: '',
-  features: [] as string[],
+  image_url: '',
+  position_ko: '',
+  position_en: '',
+  role_ko: '',
+  role_en: '',
+  tags: [] as string[],
   order: 0,
   is_active: true,
 });
 
-const featuresText = ref('');
+const newTag = ref('');
 const editingId = ref<string | null>(null);
+const imageInput = ref<HTMLInputElement | null>(null);
 
 // Computed properties
-const filteredPhases = computed(() => {
-  let filtered = phases.value;
+const filteredMembers = computed(() => {
+  let filtered = members.value;
 
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(phase =>
-      phase.title_ko.toLowerCase().includes(query) ||
-      phase.title_en.toLowerCase().includes(query) ||
-      phase.description_ko.toLowerCase().includes(query) ||
-      phase.description_en.toLowerCase().includes(query) ||
-      phase.features.some(f => f.toLowerCase().includes(query))
+    filtered = filtered.filter(member =>
+      member.position_ko.toLowerCase().includes(query) ||
+      member.position_en.toLowerCase().includes(query) ||
+      member.role_ko.toLowerCase().includes(query) ||
+      member.role_en.toLowerCase().includes(query) ||
+      member.tags.some(tag => tag.toLowerCase().includes(query))
     );
   }
 
@@ -428,13 +505,13 @@ const filteredPhases = computed(() => {
 });
 
 // Methods
-const loadPhases = async () => {
+const loadMembers = async () => {
   try {
     loading.value = true;
-    phases.value = await apiService.getStrategyPhases(showAll.value);
+    members.value = await apiService.getTeamMembers(showAll.value);
   } catch (error) {
-    console.error('Failed to load strategy phases:', error);
-    alert('전략 로드맵 페이즈를 불러오는데 실패했습니다.');
+    console.error('Failed to load team members:', error);
+    alert('팀 구성원을 불러오는데 실패했습니다.');
   } finally {
     loading.value = false;
   }
@@ -442,98 +519,146 @@ const loadPhases = async () => {
 
 const openCreateModal = () => {
   isEditing.value = false;
+  imageLoadError.value = false;
   formData.value = {
-    icon: '',
-    title_ko: '',
-    title_en: '',
-    description_ko: '',
-    description_en: '',
-    features: [],
-    order: phases.value.length,
+    image_url: '',
+    position_ko: '',
+    position_en: '',
+    role_ko: '',
+    role_en: '',
+    tags: [],
+    order: members.value.length,
     is_active: true,
   };
-  featuresText.value = '';
   editingId.value = null;
   showModal.value = true;
 };
 
-const editPhase = (phase: StrategyPhase) => {
+const editMember = (member: TeamMember) => {
   isEditing.value = true;
+  imageLoadError.value = false;
   formData.value = {
-    icon: phase.icon,
-    title_ko: phase.title_ko,
-    title_en: phase.title_en,
-    description_ko: phase.description_ko,
-    description_en: phase.description_en,
-    features: [...phase.features],
-    order: phase.order,
-    is_active: phase.is_active,
+    image_url: member.image_url,
+    position_ko: member.position_ko,
+    position_en: member.position_en,
+    role_ko: member.role_ko,
+    role_en: member.role_en,
+    tags: [...member.tags],
+    order: member.order,
+    is_active: member.is_active,
   };
-  featuresText.value = phase.features.join('\n');
-  editingId.value = phase.id;
+  editingId.value = member.id;
   showModal.value = true;
 };
 
 const closeModal = () => {
   showModal.value = false;
+  imageLoadError.value = false;
   formData.value = {
-    icon: '',
-    title_ko: '',
-    title_en: '',
-    description_ko: '',
-    description_en: '',
-    features: [],
+    image_url: '',
+    position_ko: '',
+    position_en: '',
+    role_ko: '',
+    role_en: '',
+    tags: [],
     order: 0,
     is_active: true,
   };
-  featuresText.value = '';
   editingId.value = null;
+  newTag.value = '';
 };
 
-const savePhase = async () => {
+const handleImageSelect = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (!file) return;
+
+  // Check file size (5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('이미지 크기는 5MB 이하여야 합니다.');
+    return;
+  }
+
+  try {
+    uploading.value = true;
+    imageLoadError.value = false; // 새 업로드 시 에러 상태 초기화
+    const result = await apiService.uploadImage(file);
+    formData.value.image_url = result.url;
+    console.log('✅ Image URL set to formData:', result.url);
+  } catch (error) {
+    console.error('Failed to upload image:', error);
+    alert('이미지 업로드에 실패했습니다.');
+  } finally {
+    uploading.value = false;
+    if (target) target.value = '';
+  }
+};
+
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement;
+  console.error('❌ Failed to load image:', target.src);
+  imageLoadError.value = true;
+  // 무한 루프 방지: src를 변경하지 않고 에러 상태만 설정
+};
+
+const addTag = () => {
+  const tag = newTag.value.trim();
+  if (tag && !formData.value.tags.includes(tag)) {
+    formData.value.tags.push(tag);
+    newTag.value = '';
+  }
+};
+
+const removeTag = (index: number) => {
+  formData.value.tags.splice(index, 1);
+};
+
+const saveMember = async () => {
   try {
     saving.value = true;
 
-    // Convert features text to array
-    const features = featuresText.value
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 0);
-
-    const dataToSave = {
-      ...formData.value,
-      features,
+    // Plain object로 변환하여 전송
+    const dataToSend = {
+      image_url: formData.value.image_url,
+      position_ko: formData.value.position_ko,
+      position_en: formData.value.position_en,
+      role_ko: formData.value.role_ko,
+      role_en: formData.value.role_en,
+      tags: [...formData.value.tags],
+      order: formData.value.order,
+      is_active: formData.value.is_active,
     };
 
     if (isEditing.value && editingId.value) {
-      const updated = await apiService.updateStrategyPhase(editingId.value, dataToSave);
-      const index = phases.value.findIndex(p => p.id === editingId.value);
+      const updated = await apiService.updateTeamMember(editingId.value, dataToSend);
+      const index = members.value.findIndex(m => m.id === editingId.value);
       if (index !== -1) {
-        phases.value[index] = updated;
+        members.value[index] = updated;
       }
     } else {
-      const created = await apiService.createStrategyPhase(dataToSave);
-      phases.value.push(created);
-      phases.value.sort((a, b) => a.order - b.order);
+      const created = await apiService.createTeamMember(dataToSend);
+      members.value.push(created);
+      members.value.sort((a, b) => a.order - b.order);
     }
 
     closeModal();
   } catch (error) {
-    console.error('Failed to save strategy phase:', error);
-    alert('전략 로드맵 페이즈 저장에 실패했습니다.');
+    console.error('Failed to save team member:', error);
+    alert('팀 구성원 저장에 실패했습니다.');
   } finally {
     saving.value = false;
   }
 };
 
-const toggleActive = async (phase: StrategyPhase) => {
+const toggleActive = async (member: TeamMember) => {
   try {
-    const updated = await apiService.updateStrategyPhase(phase.id, {
-      is_active: !phase.is_active
+    const updated = await apiService.updateTeamMember(member.id, {
+      is_active: !member.is_active
     });
-    const index = phases.value.findIndex(p => p.id === phase.id);
+    const index = members.value.findIndex(m => m.id === member.id);
     if (index !== -1) {
-      phases.value[index] = updated;
+      members.value[index] = updated;
     }
   } catch (error) {
     console.error('Failed to toggle active status:', error);
@@ -541,40 +666,41 @@ const toggleActive = async (phase: StrategyPhase) => {
   }
 };
 
-const deletePhase = (phase: StrategyPhase) => {
-  phaseToDelete.value = phase;
+const deleteMember = (member: TeamMember) => {
+  memberToDelete.value = member;
   showDeleteModal.value = true;
 };
 
 const cancelDelete = () => {
-  phaseToDelete.value = null;
+  memberToDelete.value = null;
   showDeleteModal.value = false;
 };
 
 const confirmDelete = async () => {
-  if (!phaseToDelete.value) return;
+  if (!memberToDelete.value) return;
 
   try {
     deleting.value = true;
-    await apiService.deleteStrategyPhase(phaseToDelete.value.id);
-    phases.value = phases.value.filter(p => p.id !== phaseToDelete.value!.id);
+    await apiService.deleteTeamMember(memberToDelete.value.id);
+    members.value = members.value.filter(m => m.id !== memberToDelete.value!.id);
     showDeleteModal.value = false;
-    phaseToDelete.value = null;
+    memberToDelete.value = null;
   } catch (error) {
-    console.error('Failed to delete strategy phase:', error);
-    alert('전략 로드맵 페이즈 삭제에 실패했습니다.');
+    console.error('Failed to delete team member:', error);
+    alert('팀 구성원 삭제에 실패했습니다.');
   } finally {
     deleting.value = false;
   }
 };
 
 // Watch showAll changes
+import { watch } from 'vue';
 watch(showAll, () => {
-  loadPhases();
+  loadMembers();
 });
 
 // Initialize
 onMounted(() => {
-  loadPhases();
+  loadMembers();
 });
 </script>

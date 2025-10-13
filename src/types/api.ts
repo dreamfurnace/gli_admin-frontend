@@ -251,3 +251,98 @@ export interface ShoppingOrderItem {
   created_at: string;
   updated_at: string;
 }
+
+// Team Member Types
+export interface TeamMember {
+  id: string; // UUID
+  image_url: string;
+  position_ko: string;
+  position_en: string;
+  role_ko: string;
+  role_en: string;
+  tags: string[];
+  order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Project Feature Types
+export interface ProjectFeature {
+  id: string; // UUID
+  icon: string;
+  title_ko: string;
+  title_en: string;
+  description_ko: string;
+  description_en: string;
+  order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Strategy Phase Types
+export interface StrategyPhase {
+  id: string; // UUID
+  icon: string;
+  title_ko: string;
+  title_en: string;
+  description_ko: string;
+  description_en: string;
+  features: string[];
+  order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Development Timeline Types
+export interface DevelopmentTimeline {
+  id: string; // UUID
+  quarter: string;
+  status_icon: string;
+  title_ko: string;
+  title_en: string;
+  description_ko: string;
+  description_en: string;
+  order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Token Ecosystem Types
+export interface TokenEcosystem {
+  id: string; // UUID
+  icon: string;
+  name: string;
+  symbol: string;
+  description_ko: string;
+  description_en: string;
+  features: string[];
+  total_supply: string;
+  current_price: string;
+  order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Member Types (회원 관리)
+export interface Member {
+  id: string; // UUID
+  username: string;
+  email: string;
+  wallet_address?: string;
+  membership_level: 'basic' | 'premium' | 'vip';
+  sol_balance: string; // Decimal as string
+  is_active: boolean;
+  vpx_verify: number; // V(Verify) 포인트: 비트플래그 (0-7)
+  vpx_partner: number; // P(Partner) 포인트: 비트플래그 (0-7)
+  vpx_experience: number; // X(eXperience) 포인트: 비트플래그 (0-7)
+  created_at: string;
+  updated_at: string;
+  last_login?: string;
+  first_name?: string;
+  last_name?: string;
+}

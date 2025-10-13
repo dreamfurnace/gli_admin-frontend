@@ -102,6 +102,66 @@
             </div>
         </div>
 
+        <!-- 개발환경용 원클릭 로그인 패널 -->
+        <div
+            v-if="isDevelopment"
+            class="fixed bottom-4 right-4 bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-4 border-2 border-blue-500 max-w-sm"
+        >
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-gray-900 dark:text-white">
+                    🚀 개발환경 원클릭 로그인
+                </h3>
+                <button
+                    @click="showDevPanel = !showDevPanel"
+                    class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                    {{ showDevPanel ? '▼' : '▲' }}
+                </button>
+            </div>
+
+            <div v-show="showDevPanel" class="space-y-2">
+                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-semibold">
+                    슈퍼 관리자 계정
+                </div>
+                <button
+                    @click="quickLogin('superadmin1@gli.com', 'super1234!')"
+                    class="w-full text-left px-3 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 rounded text-sm font-medium"
+                >
+                    🔐 슈퍼 관리자 1<br />
+                    <span class="text-xs text-gray-600 dark:text-gray-400">
+                        superadmin1@gli.com
+                    </span>
+                </button>
+                <button
+                    @click="quickLogin('superadmin2@gli.com', 'super1234!')"
+                    class="w-full text-left px-3 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 rounded text-sm font-medium"
+                >
+                    🔐 슈퍼 관리자 2<br />
+                    <span class="text-xs text-gray-600 dark:text-gray-400">
+                        superadmin2@gli.com
+                    </span>
+                </button>
+
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-3 mb-2 font-semibold">
+                    일반 관리자 계정
+                </div>
+                <button
+                    @click="quickLogin('admin1@gli.com', 'admin1234!')"
+                    class="w-full text-left px-3 py-2 bg-green-100 hover:bg-green-200 dark:bg-green-900 dark:hover:bg-green-800 rounded text-sm font-medium"
+                >
+                    👤 일반 관리자 1<br />
+                    <span class="text-xs text-gray-600 dark:text-gray-400">admin1@gli.com</span>
+                </button>
+                <button
+                    @click="quickLogin('admin2@gli.com', 'admin1234!')"
+                    class="w-full text-left px-3 py-2 bg-green-100 hover:bg-green-200 dark:bg-green-900 dark:hover:bg-green-800 rounded text-sm font-medium"
+                >
+                    👤 일반 관리자 2<br />
+                    <span class="text-xs text-gray-600 dark:text-gray-400">admin2@gli.com</span>
+                </button>
+            </div>
+        </div>
+
         <!-- 에러 모달 -->
         <div
             v-if="showErrorModal"
@@ -171,6 +231,8 @@ const authStore = useAuthStore();
 
 const showErrorModal = ref(false);
 const envInfo = `${import.meta.env.MODE}`;
+const isDevelopment = import.meta.env.MODE === 'development';
+const showDevPanel = ref(true);
 
 const state = reactive<LoginFormState>({
     form: {
@@ -207,5 +269,11 @@ const handleSubmit = async () => {
     } finally {
         state.isLoading = false;
     }
+};
+
+const quickLogin = async (username: string, password: string) => {
+    state.form.username = username;
+    state.form.password = password;
+    await handleSubmit();
 };
 </script>

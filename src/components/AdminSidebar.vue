@@ -175,14 +175,27 @@ const handleLogout = async () => {
 
 const menuItems = [
 	{ icon: "🏠", title: "대시보드", path: "/admin" },
+	{ icon: "🔐", title: "관리자 관리", path: "/admin-management" },
 	{
 		icon: "📄",
-		title: "비즈니스 콘텐츠",
+		title: "사업소개-콘텐츠 관리",
 		path: "/business",
 		children: [
-			{ title: "회사 정보", path: "/business/info" },
-			{ title: "팀 관리", path: "/business/team" },
-			{ title: "전략 & 로드맵", path: "/business/strategy" },
+			{ title: "🎯 프로젝트 소개", path: "/business/project" },
+			{ title: "👥 팀 구성원", path: "/business/team" },
+			{ title: "📊 전략 로드맵", path: "/business/strategy" },
+			{ title: "🗓️ 개발 일정", path: "/business/schedule" },
+			{ title: "🪙 토큰 에코시스템", path: "/business/token-ecosystem" },
+		],
+	},
+	{
+		icon: "👥",
+		title: "회원 관리",
+		path: "/members",
+		children: [
+			{ title: "회원 목록", path: "/members/list" },
+			{ title: "인증 상태", path: "/members/auth-status" },
+			{ title: "거래 모니터링", path: "/members/transactions" },
 		],
 	},
 	{
@@ -193,16 +206,6 @@ const menuItems = [
 			{ title: "토큰 사용처", path: "/tokens/usage" },
 			{ title: "배포 계획", path: "/tokens/distribution" },
 			{ title: "GLIB/GLID 관리", path: "/tokens/management" },
-		],
-	},
-	{
-		icon: "👥",
-		title: "멤버 관리",
-		path: "/members",
-		children: [
-			{ title: "멤버 목록", path: "/members/list" },
-			{ title: "인증 상태", path: "/members/auth-status" },
-			{ title: "거래 모니터링", path: "/members/transactions" },
 		],
 	},
 	{

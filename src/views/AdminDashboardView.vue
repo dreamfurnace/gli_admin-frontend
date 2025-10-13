@@ -215,7 +215,7 @@ const loadDashboardData = async () => {
     console.log('✅ Dashboard data loaded:', stats.value);
   } catch (error) {
     console.error('❌ Failed to load dashboard data:', error);
-    // Error is already handled by API service and displayed to user
+    // 에러 발생 시에도 로딩 상태 해제
   } finally {
     loading.value = false;
   }

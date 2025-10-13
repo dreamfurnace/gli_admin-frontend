@@ -29,28 +29,53 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/AdminDashboardView.vue'),
         meta: { requiresAuth: true, title: 'Dashboard' },
     },
+    // Admin Management Routes
+    {
+        path: '/admin-management',
+        name: 'admin-management',
+        component: () => import('@/views/AdminAccountView.vue'),
+        meta: { requiresAuth: true, title: 'Admin Management' },
+    },
     // Business Content Management Routes
     {
         path: '/business',
         meta: { requiresAuth: true },
         children: [
             {
-                path: 'info',
-                name: 'business-info',
-                component: () => import('@/views/business/CompanyInfoView.vue'),
-                meta: { requiresAuth: true, title: 'Company Info' },
+                path: 'project',
+                name: 'business-project',
+                component: () => import('@/views/business/ProjectIntroView.vue'),
+                meta: { requiresAuth: true, title: 'Project Introduction' },
             },
             {
                 path: 'team',
                 name: 'business-team',
-                component: () => import('@/views/business/TeamManagementView.vue'),
-                meta: { requiresAuth: true, title: 'Team Management' },
+                component: () => import('@/views/business/TeamMembersView.vue'),
+                meta: { requiresAuth: true, title: 'Team Members' },
             },
             {
                 path: 'strategy',
                 name: 'business-strategy',
                 component: () => import('@/views/business/StrategyRoadmapView.vue'),
-                meta: { requiresAuth: true, title: 'Strategy & Roadmap' },
+                meta: { requiresAuth: true, title: 'Strategy Roadmap' },
+            },
+            {
+                path: 'schedule',
+                name: 'business-schedule',
+                component: () => import('@/views/business/DevelopmentScheduleView.vue'),
+                meta: { requiresAuth: true, title: 'Development Schedule' },
+            },
+            {
+                path: 'timeline',
+                name: 'business-timeline',
+                component: () => import('@/views/business/DevelopmentTimelineView.vue'),
+                meta: { requiresAuth: true, title: 'Development Timeline' },
+            },
+            {
+                path: 'token-ecosystem',
+                name: 'business-token-ecosystem',
+                component: () => import('@/views/business/TokenEcosystemView.vue'),
+                meta: { requiresAuth: true, title: 'Token Ecosystem' },
             },
         ],
     },
