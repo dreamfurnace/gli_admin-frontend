@@ -231,7 +231,9 @@ const authStore = useAuthStore();
 
 const showErrorModal = ref(false);
 const envInfo = `${import.meta.env.MODE}`;
-const isDevelopment = import.meta.env.MODE === 'development';
+// 개발(development) 또는 스테이징(staging) 환경에서만 더미 로그인 UI 표시
+// production 환경에서는 표시하지 않음 (보안)
+const isDevelopment = import.meta.env.VITE_APP_ENV !== 'production';
 const showDevPanel = ref(true);
 
 const state = reactive<LoginFormState>({
