@@ -44,7 +44,7 @@ jobs:
       run: npm run type-check || echo "⚠️  타입 체크 경고 무시 (배포 진행)"
 
     - name: 프로덕션 빌드 (Staging 모드)
-      run: npm run build -- --mode staging
+      run: npm run build-only -- --mode staging
       env:
         NODE_ENV: production
 
