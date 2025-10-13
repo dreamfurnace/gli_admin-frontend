@@ -1,0 +1,105 @@
+name: Deploy Admin Frontend to Staging
+
+on:
+  push:
+    branches: [stg]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-northeast-2
+  NODE_VERSION: '22'
+
+jobs:
+  deploy:
+    name: Build and Deploy to S3 + CloudFront (Staging)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 체크아웃
+      uses: actions/checkout@v4
+
+    - name: Node.js 설정
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 의존성 설치
+      run: npm ci
+
+    - name: 환경 변수 생성
+      run: |
+        export TZ='Asia/Seoul'
+        BUILD_UID=$(date '+%m.%d-%H:%M:%S')
+        echo "BUILD_UID=$BUILD_UID" >> $GITHUB_ENV
+        echo "🎯 Generated BUILD_UID: $BUILD_UID (KST)"
+
+        # .env.staging.local 파일 생성 (빌드 시 사용)
+        echo "VITE_APP_ENV=staging" > .env.staging.local
+        echo "VITE_API_BASE_URL=https://stg-api.glibiz.com" >> .env.staging.local
+        echo "VITE_BUILD_UID=$BUILD_UID" >> .env.staging.local
+
+        echo "📝 환경 변수 파일 생성 완료"
+
+    - name: TypeScript 타입 체크
+      run: npm run type-check
+
+    - name: 프로덕션 빌드 (Staging 모드)
+      run: npm run build -- --mode staging
+      env:
+        NODE_ENV: production
+
+    - name: 빌드 결과 확인
+      run: |
+        echo "📦 빌드 결과 디렉토리 내용:"
+        ls -lah dist/
+        echo "📊 빌드 파일 크기:"
+        du -sh dist/
+
+    - name: AWS 자격 증명 설정
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: S3 버킷 동기화
+      run: |
+        echo "☁️  S3 버킷에 업로드 중..."
+        aws s3 sync ./dist s3://${{ secrets.STG_ADMIN_S3_BUCKET }} \
+          --delete \
+          --cache-control "public, max-age=31536000, immutable" \
+          --exclude "index.html" \
+          --exclude "*.map"
+
+        # index.html은 캐시하지 않음
+        aws s3 cp ./dist/index.html s3://${{ secrets.STG_ADMIN_S3_BUCKET }}/index.html \
+          --cache-control "public, max-age=0, must-revalidate" \
+          --content-type "text/html"
+
+        echo "✅ S3 업로드 완료"
+
+    - name: CloudFront 캐시 무효화
+      run: |
+        echo "🔄 CloudFront 캐시 무효화 중..."
+        INVALIDATION_ID=$(aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --paths "/*" \
+          --query 'Invalidation.Id' \
+          --output text)
+
+        echo "무효화 ID: $INVALIDATION_ID"
+        echo "✅ CloudFront 캐시 무효화 요청 완료"
+
+    - name: 배포 완료 알림
+      if: always()
+      run: |
+        if [ "${{ job.status }}" = "success" ]; then
+          echo "🎉 GLI Admin Frontend Staging 배포 성공!"
+          echo "🌐 URL: https://stg-admin.glibiz.com"
+          echo "🏷️  BUILD_UID: ${{ env.BUILD_UID }}"
+          echo "📦 S3 Bucket: ${{ secrets.STG_ADMIN_S3_BUCKET }}"
+          echo "☁️  CloudFront: ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }}"
+        else
+          echo "❌ GLI Admin Frontend Staging 배포 실패!"
+        fi
