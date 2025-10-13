@@ -65,14 +65,14 @@ jobs:
     - name: S3 버킷 동기화
       run: |
         echo "☁️  S3 버킷에 업로드 중..."
-        aws s3 sync ./dist s3://${{ secrets.STG_ADMIN_S3_BUCKET }} \
+        aws s3 sync ./dist s3://${{ secrets.STG_S3_BUCKET }} \
           --delete \
           --cache-control "public, max-age=31536000, immutable" \
           --exclude "index.html" \
           --exclude "*.map"
 
         # index.html은 캐시하지 않음
-        aws s3 cp ./dist/index.html s3://${{ secrets.STG_ADMIN_S3_BUCKET }}/index.html \
+        aws s3 cp ./dist/index.html s3://${{ secrets.STG_S3_BUCKET }}/index.html \
           --cache-control "public, max-age=0, must-revalidate" \
           --content-type "text/html"
 
@@ -84,7 +84,7 @@ jobs:
 
         # CloudFront 배포 설정 가져오기
         ETAG=$(aws cloudfront get-distribution-config \
-          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --id ${{ secrets.STG_CLOUDFRONT_DISTRIBUTION_ID }} \
           --query 'ETag' \
           --output text)
 
@@ -92,7 +92,7 @@ jobs:
 
         # 에러 페이지 설정이 없으면 추가 (403, 404 → index.html)
         aws cloudfront get-distribution-config \
-          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --id ${{ secrets.STG_CLOUDFRONT_DISTRIBUTION_ID }} \
           --output json > /tmp/cf-config.json
 
         # CustomErrorResponses 확인 및 업데이트
@@ -135,7 +135,7 @@ jobs:
 
         # CloudFront 배포 업데이트
         aws cloudfront update-distribution \
-          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --id ${{ secrets.STG_CLOUDFRONT_DISTRIBUTION_ID }} \
           --distribution-config file:///tmp/cf-config-updated.json \
           --if-match "$ETAG" || echo "⚠️  CloudFront 설정은 이미 최신 상태이거나 업데이트가 불필요합니다"
 
@@ -160,8 +160,8 @@ jobs:
           echo "🎉 GLI Admin Frontend Staging 배포 성공!"
           echo "🌐 URL: https://stg-admin.glibiz.com"
           echo "🏷️  BUILD_UID: ${{ env.BUILD_UID }}"
-          echo "📦 S3 Bucket: ${{ secrets.STG_ADMIN_S3_BUCKET }}"
-          echo "☁️  CloudFront: ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }}"
+          echo "📦 S3 Bucket: ${{ secrets.STG_S3_BUCKET }}"
+          echo "☁️  CloudFront: ${{ secrets.STG_CLOUDFRONT_DISTRIBUTION_ID }}"
         else
           echo "❌ GLI Admin Frontend Staging 배포 실패!"
         fi
@@ -172,7 +172,7 @@ jobs:
 
         # CloudFront 배포 설정 가져오기
         ETAG=$(aws cloudfront get-distribution-config \
-          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --id ${{ secrets.STG_CLOUDFRONT_DISTRIBUTION_ID }} \
           --query 'ETag' \
           --output text)
 
@@ -180,7 +180,7 @@ jobs:
 
         # 에러 페이지 설정이 없으면 추가 (403, 404 → index.html)
         aws cloudfront get-distribution-config \
-          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --id ${{ secrets.STG_CLOUDFRONT_DISTRIBUTION_ID }} \
           --output json > /tmp/cf-config.json
 
         # CustomErrorResponses 확인 및 업데이트
@@ -223,7 +223,7 @@ jobs:
 
         # CloudFront 배포 업데이트
         aws cloudfront update-distribution \
-          --id ${{ secrets.STG_ADMIN_CF_DISTRIBUTION_ID }} \
+          --id ${{ secrets.STG_CLOUDFRONT_DISTRIBUTION_ID }} \
           --distribution-config file:///tmp/cf-config-updated.json \
           --if-match "$ETAG" || echo "⚠️  CloudFront 설정은 이미 최신 상태이거나 업데이트가 불필요합니다"
 
