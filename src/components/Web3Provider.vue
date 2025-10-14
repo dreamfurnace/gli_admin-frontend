@@ -121,14 +121,19 @@ const setupEventListeners = () => {
 
 // Check if already connected
 const checkConnection = async () => {
-  if (!window.ethereum) return;
+  // Phantom 지갑이나 MetaMask 미설치 시 안전하게 처리
+  if (typeof window === 'undefined' || !window.ethereum) {
+    console.log('🦊 MetaMask 또는 호환 지갑을 찾을 수 없습니다. Web3 기능을 건너뜁니다.');
+    return;
+  }
 
   try {
+    // 지갑이 있는지 확인하고 계정 요청
     const accounts = await window.ethereum.request({
       method: 'eth_accounts',
     });
 
-    if (accounts.length > 0) {
+    if (accounts && accounts.length > 0) {
       address.value = accounts[0];
       isConnected.value = true;
 
@@ -136,9 +141,22 @@ const checkConnection = async () => {
         method: 'eth_chainId',
       });
       chainId.value = parseInt(chainIdHex, 16);
+
+      console.log('✅ 지갑 연결 확인됨:', address.value, '체인:', chainId.value);
+    } else {
+      console.log('🔌 연결된 지갑 계정이 없습니다.');
     }
-  } catch (error) {
-    console.error('Failed to check connection:', error);
+  } catch (error: any) {
+    // 더 자세한 에러 정보 제공
+    if (error.code === -32002) {
+      console.warn('⏳ 지갑 연결 요청이 대기 중입니다. 지갑을 확인해주세요.');
+    } else if (error.code === -32603) {
+      console.warn('🔗 지갑 RPC 연결에 실패했습니다. 나중에 다시 시도하세요.');
+    } else if (error.message?.includes('User rejected')) {
+      console.warn('❌ 사용자가 지갑 연결을 거부했습니다.');
+    } else {
+      console.warn('⚠️  지갑 연결 확인 중 오류가 발생했습니다:', error.message || error);
+    }
   }
 };
 
