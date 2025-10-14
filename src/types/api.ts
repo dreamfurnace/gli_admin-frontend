@@ -1,20 +1,8 @@
 // GLI Admin API Types
-export interface LoginCredentials {
-  username: string;
-  password: string;
-}
+// Auth types are imported from types/auth.ts
+import type { AdminUser, LoginCredentials } from './auth';
 
-export interface AdminUser {
-  id: number;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  grade: {
-    id: number;
-    name: string;
-  };
-}
+export type { AdminUser, LoginCredentials };
 
 export interface BusinessContent {
   id: string; // UUID in backend
