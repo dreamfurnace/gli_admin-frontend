@@ -48,7 +48,7 @@ jobs:
       run: npm run lint || echo "⚠️  Lint 경고 무시 (배포 진행)"
 
     - name: 프로덕션 빌드
-      run: npm run build -- --mode production
+      run: npm run build-only -- --mode production
       env:
         NODE_ENV: production
 
