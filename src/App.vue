@@ -1,39 +1,36 @@
 <!-- GLI Admin Frontend App.vue -->
 <template>
-    <!-- GLI Admin Dashboard Layout with Web3 Provider -->
-    <Web3Provider>
-        <div class="app-container bg-gray-50 dark:bg-gray-900">
-            <!-- Authentication Layout -->
-            <div v-if="!isAuthenticated">
-                <RouterView />
-            </div>
-
-            <div v-else class="flex w-full fixed-layout">
-                <AdminSidebar />
-                <main class="flex-1 p-4 overflow-auto">
-                    <!-- Development Debug Info -->
-                    <div
-                        v-if="isDev"
-                        class="debug-info p-4 mb-4 bg-blue-50 border border-blue-200 rounded-lg"
-                    >
-                        <p class="text-sm text-blue-800">
-                            <strong>[GLI Development]</strong> Auth: {{ isAuthenticated }} | 
-                            Admin: {{ authStore.user?.username }} | 
-                            Role: {{ authStore.user?.grade?.name || 'Loading...' }}
-                        </p>
-                    </div>
-                    <RouterView />
-                </main>
-            </div>
+    <!-- GLI Admin Dashboard Layout -->
+    <div class="app-container bg-gray-50 dark:bg-gray-900">
+        <!-- Authentication Layout -->
+        <div v-if="!isAuthenticated">
+            <RouterView />
         </div>
-    </Web3Provider>
+
+        <div v-else class="flex w-full fixed-layout">
+            <AdminSidebar />
+            <main class="flex-1 p-4 overflow-auto">
+                <!-- Development Debug Info -->
+                <div
+                    v-if="isDev"
+                    class="debug-info p-4 mb-4 bg-blue-50 border border-blue-200 rounded-lg"
+                >
+                    <p class="text-sm text-blue-800">
+                        <strong>[GLI Development]</strong> Auth: {{ isAuthenticated }} |
+                        Admin: {{ authStore.user?.username }} |
+                        Role: {{ authStore.user?.grade?.name || 'Loading...' }}
+                    </p>
+                </div>
+                <RouterView />
+            </main>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
 import { RouterView } from 'vue-router';
 import AdminSidebar from '@/components/AdminSidebar.vue';
-import Web3Provider from '@/components/Web3Provider.vue';
 import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
