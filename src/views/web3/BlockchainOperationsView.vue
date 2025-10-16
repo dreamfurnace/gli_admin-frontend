@@ -1,5 +1,6 @@
 <template>
-  <div class="p-6">
+  <Web3Provider>
+    <div class="p-6">
     <div class="mb-6 flex justify-between items-start">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Blockchain Operations</h1>
@@ -138,11 +139,13 @@
         </div>
       </div>
     </div>
-  </div>
+    </div>
+  </Web3Provider>
 </template>
 
 <script setup lang="ts">
 import { inject } from 'vue';
+import Web3Provider from '@/components/Web3Provider.vue';
 import Web3WalletButton from '@/components/Web3WalletButton.vue';
 import Web3TokenBalance from '@/components/Web3TokenBalance.vue';
 

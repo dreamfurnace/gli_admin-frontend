@@ -19,21 +19,21 @@ const isConnecting = ref(false);
 // Web3 connection methods
 const connectWallet = async () => {
   if (typeof window === 'undefined' || !window.ethereum) {
-    throw new Error('MetaMask or compatible wallet not found');
+    throw new Error('MetaMask 또는 호환 지갑을 찾을 수 없습니다. 지갑을 설치해주세요.');
   }
 
   try {
     isConnecting.value = true;
-    
+
     // Request account access
     const accounts = await window.ethereum.request({
       method: 'eth_requestAccounts',
     });
 
-    if (accounts.length > 0) {
+    if (accounts && accounts.length > 0) {
       address.value = accounts[0];
       isConnected.value = true;
-      
+
       // Get chain ID
       const chainIdHex = await window.ethereum.request({
         method: 'eth_chainId',
@@ -41,10 +41,22 @@ const connectWallet = async () => {
       chainId.value = parseInt(chainIdHex, 16);
 
       console.log('🦄 GLI Wallet connected:', address.value, 'Chain:', chainId.value);
+    } else {
+      throw new Error('지갑 연결에 실패했습니다. 계정이 없습니다.');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to connect wallet:', error);
-    throw error;
+
+    // 사용자 친화적인 에러 메시지 제공
+    if (error.code === -32002) {
+      throw new Error('지갑 연결 요청이 이미 대기 중입니다. 지갑을 확인해주세요.');
+    } else if (error.code === 4001) {
+      throw new Error('사용자가 지갑 연결을 거부했습니다.');
+    } else if (error.message?.includes('User rejected')) {
+      throw new Error('사용자가 지갑 연결을 거부했습니다.');
+    } else {
+      throw new Error(error.message || '지갑 연결 중 알 수 없는 오류가 발생했습니다.');
+    }
   } finally {
     isConnecting.value = false;
   }
